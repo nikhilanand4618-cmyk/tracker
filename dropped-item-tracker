@@ -1,0 +1,24 @@
+@Mod(modid = "droppeditemtracker", name = "Dropped Item Tracker",
+     version = "1.0.0", clientSideOnly = true)
+public class DroppedItemTracker {
+    public static TrackerConfig config;
+    public static TrackerHud hud;
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        File configDir = new File(event.getModConfigurationDirectory(), "droppeditemtracker");
+        if (!configDir.exists()) configDir.mkdirs();
+        config = new TrackerConfig(new File(configDir, "config.json"));
+        config.load();
+    }
+
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(new ChatEventHandler());
+        MinecraftForge.EVENT_BUS.register(new TickEventHandler());
+        ClientCommandHandler.instance.registerCommand(new SetPriceCommand());
+        ClientCommandHandler.instance.registerCommand(new TrackerGuiCommand());
+        hud = new TrackerHud();
+        MinecraftForge.EVENT_BUS.register(hud);
+    }
+}
